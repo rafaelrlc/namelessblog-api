@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 import java.util.Set;
 
 @Data
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table( name = "user" )
+@Table( name = "usuarios" )
 public class User {
 
     @Id
@@ -25,11 +25,15 @@ public class User {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "password")
+    private String password;
+
     @Column(name = "username")
     private String username;
 
     @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL)
     private Set<Post> posts;
+
 
     @ManyToMany
     @JoinTable(name = "followers",
@@ -40,5 +44,12 @@ public class User {
     @ManyToMany(mappedBy = "followers") // está sendo mapeado pelo "followers" acima,
     // estão no mesmo arquivo pois se trata de um relacionamento many to many entre entidades iguais
     private Set<User> following;
+
+    public User(String name, String email, String password, String username) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.username = username;
+    }
 
 }
