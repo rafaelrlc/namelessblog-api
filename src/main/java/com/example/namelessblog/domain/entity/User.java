@@ -31,7 +31,7 @@ public class User {
     @Column(name = "username")
     private String username;
 
-    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private Set<Post> posts;
 
 
@@ -41,7 +41,8 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "seguidor_id"))
     private Set<User> followers; // nome ao qual o inverseJoinColumn será mapeado
 
-    @ManyToMany(mappedBy = "followers") // está sendo mapeado pelo "followers" acima,
+    @ManyToMany(mappedBy = "followers")
+    // está sendo mapeado pelo "followers" acima,
     // estão no mesmo arquivo pois se trata de um relacionamento many to many entre entidades iguais
     private Set<User> following;
 
