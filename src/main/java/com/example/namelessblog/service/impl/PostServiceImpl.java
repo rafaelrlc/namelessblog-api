@@ -6,6 +6,7 @@ import com.example.namelessblog.repository.PostRepository;
 import com.example.namelessblog.repository.UserRepository;
 import com.example.namelessblog.rest.dto.PostDTO;
 import com.example.namelessblog.service.PostService;
+import com.example.namelessblog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,28 +18,34 @@ import java.util.Objects;
 @Service
 public class PostServiceImpl implements PostService {
 
-    @Autowired
-    private PostRepository postRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final UserService userService;
 
-    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository) {
+    @Autowired
+    public PostServiceImpl(PostRepository postRepository, UserService userService) {
         this.postRepository = postRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
+    @Override
     public void savePost(PostDTO dto) {
-        User user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        User user = userService.findUserById(dto.userId());
         Date date = new Date();
-        Post post = new Post(dto.getTitle(), dto.getContent(), user, date);
+        Post post = new Post();
+        post.setTitle(dto.title());
+        post.setContent(dto.content());
+        post.setAuthor(user);
+        post.setDate(date);
         postRepository.save(post);
     }
 
-    public void deletePostById(Long id, Long userId) {
+    @Override
+    public void deletePost(Long id, Long userId) {
         // futuramente o user vai ser pego pelo token e não pelo id passado na requisição
         Post post = postRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        User user = userService.findUserById(userId);
 
+        // verify if the user is the author of the post
         if (!Objects.equals(post.getAuthor().getId(), user.getId())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Failed to delete post");
         }

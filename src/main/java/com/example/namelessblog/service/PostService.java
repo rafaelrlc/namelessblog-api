@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 
 public interface PostService {
 
-    void deletePostById(Long id, Long userId);
+    void deletePost(Long id, Long userId);
     void savePost(PostDTO dto);
 }
