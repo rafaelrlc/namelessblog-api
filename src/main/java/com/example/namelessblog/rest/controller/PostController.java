@@ -1,10 +1,13 @@
 package com.example.namelessblog.rest.controller;
 
 
+import com.example.namelessblog.domain.entity.Post;
 import com.example.namelessblog.rest.dto.PostDTO;
 import com.example.namelessblog.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -26,6 +29,11 @@ public class PostController {
     @DeleteMapping
     public void deletePost(@RequestParam Long id, @RequestParam Long userId) {  //temporarily using request param
         postService.deletePost(id, userId);
+    }
+
+    @GetMapping()
+    public List<Post> getPosts() {
+        return postService.getPosts();
     }
 
 }

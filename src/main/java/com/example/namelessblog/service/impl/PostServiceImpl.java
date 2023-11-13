@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -52,5 +53,12 @@ public class PostServiceImpl implements PostService {
 
         postRepository.deleteById(id);
     }
+
+    @Override
+    public List<Post> getPosts() {
+        return postRepository.findAll();
+    }
+
+
 
 }
