@@ -21,7 +21,11 @@ public class NamelessblogApplication {
 			User user1 = new User("Rafael", "rafael@gmail.com", "123123", "RafaelRibeiro");
 			users.save(user1);
 
-			Post post1 = new Post("Primeiro post", "Conteúdo do primeiro post", user1, new Date());
+			Post post1 = new Post();
+			post1.setTitle("Primeiro post");
+			post1.setContent("Conteúdo do primeiro post");
+			post1.setAuthor(user1);
+			post1.setDate(new Date());
 			posts.save(post1);
 
 		};
