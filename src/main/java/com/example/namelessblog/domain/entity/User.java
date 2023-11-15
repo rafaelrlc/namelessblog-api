@@ -6,13 +6,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table( name = "usuarios" )
+@Table(name = "usuarios")
 public class User {
 
     @Id
@@ -34,13 +36,11 @@ public class User {
 
     @JsonIgnore
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-    private Set<Post> posts;
+    private List<Post> posts;
 
     @JsonIgnore
     @ManyToMany
-    @JoinTable(name = "followers",
-            joinColumns = @JoinColumn(name = "usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "seguidor_id"))
+    @JoinTable(name = "followers", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "seguidor_id"))
     private Set<User> followers; // nome ao qual o inverseJoinColumn será mapeado
 
     @JsonIgnore
