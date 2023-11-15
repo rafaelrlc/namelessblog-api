@@ -9,6 +9,12 @@ import java.util.List;
 public interface PostService {
 
     void deletePost(Long id, Long userId);
-    void savePost(PostDTO dto);
-    List<Post> getPosts();
+
+    Post savePost(PostDTO dto);
+
+    Post getPost(Long id);
+
+    List<Post> getAllPosts();
+
+    List<Post> getUserPosts(Long userId);
 }

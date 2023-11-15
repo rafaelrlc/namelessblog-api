@@ -2,9 +2,12 @@ package com.example.namelessblog.rest.controller;
 
 
 import com.example.namelessblog.domain.entity.Post;
+import com.example.namelessblog.domain.entity.User;
 import com.example.namelessblog.rest.dto.PostDTO;
 import com.example.namelessblog.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,18 +25,31 @@ public class PostController {
     }
 
     @PostMapping()
-    public void newPost(@RequestBody PostDTO dto) {
-        postService.savePost(dto);
+    public ResponseEntity<Post> newPost(@RequestBody PostDTO dto) {
+        Post post = postService.savePost(dto);
+        return new ResponseEntity<>(post, HttpStatus.CREATED);
     }
 
-    @DeleteMapping
+    @DeleteMapping()
     public void deletePost(@RequestParam Long id, @RequestParam Long userId) {  //temporarily using request param
         postService.deletePost(id, userId);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Post> getPost(@PathVariable Long id) {
+        Post post = postService.getPost(id);
+        return new ResponseEntity<>(post, HttpStatus.OK);
+    }
+
     @GetMapping()
-    public List<Post> getPosts() {
-        return postService.getPosts();
+    public ResponseEntity<List<Post>> getPosts() {
+        List<Post> posts = postService.getAllPosts();
+        return new ResponseEntity<>(posts, HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Post>> getUserPosts(@PathVariable Long userId) {
+        return new ResponseEntity<>(postService.getUserPosts(userId), HttpStatus.OK);
     }
 
 }

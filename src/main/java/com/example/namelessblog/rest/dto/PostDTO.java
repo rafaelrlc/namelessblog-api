@@ -1,6 +1,8 @@
 package com.example.namelessblog.rest.dto;
 
 
-public record PostDTO (String title, String content,  Long userId) {
+import java.util.Set;
+
+public record PostDTO (String title, String content, Long userId, Set<Long> badgesId) {
 
 }

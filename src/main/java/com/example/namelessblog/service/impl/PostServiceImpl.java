@@ -1,7 +1,9 @@
 package com.example.namelessblog.service.impl;
 
+import com.example.namelessblog.domain.entity.Badge;
 import com.example.namelessblog.domain.entity.Post;
 import com.example.namelessblog.domain.entity.User;
+import com.example.namelessblog.repository.BadgeRepository;
 import com.example.namelessblog.repository.PostRepository;
 import com.example.namelessblog.repository.UserRepository;
 import com.example.namelessblog.rest.dto.PostDTO;
@@ -12,33 +14,43 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
+    private final BadgeRepository badgeRepository;
     private final UserService userService;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, UserService userService) {
+    public PostServiceImpl(PostRepository postRepository, UserService userService, BadgeRepository badgeRepository) {
         this.postRepository = postRepository;
         this.userService = userService;
+        this.badgeRepository = badgeRepository;
     }
 
     @Override
-    public void savePost(PostDTO dto) {
+    public Post savePost(PostDTO dto) {
         User user = userService.findUserById(dto.userId());
+
+        Set<Long> badgesId = Optional.ofNullable(dto.badgesId()).orElse(Set.of()); // if badgesId is null, set it to an empty set
+
+        List<Badge> badges = badgeRepository.findAllById(badgesId);
+
         Date date = new Date();
         Post post = new Post();
         post.setTitle(dto.title());
         post.setContent(dto.content());
         post.setAuthor(user);
         post.setDate(date);
+
+        post.getBadges().addAll(badges);
+
         postRepository.save(post);
+        return post;
     }
+
 
     @Override
     public void deletePost(Long id, Long userId) {
@@ -55,10 +67,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getPosts() {
+    public List<Post> getAllPosts() {
         return postRepository.findAll();
     }
 
+    @Override
+    public List<Post> getUserPosts(Long userId) {
+        User user = userService.findUserById(userId);
+        return postRepository.findAllByAuthor_Id(user.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User has no posts"));
+    }
 
+    @Override
+    public Post getPost(Long id) {
+        return postRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+    }
 
 }
