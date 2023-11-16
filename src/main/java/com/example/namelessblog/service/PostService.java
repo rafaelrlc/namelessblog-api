@@ -1,6 +1,7 @@
 package com.example.namelessblog.service;
 
 import com.example.namelessblog.domain.entity.Post;
+import com.example.namelessblog.rest.dto.HomePagePostDTO;
 import com.example.namelessblog.rest.dto.PostDTO;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +15,7 @@ public interface PostService {
 
     Post getPost(Long id);
 
-    List<Post> getAllPosts();
+    List<HomePagePostDTO> getAllPosts();
 
     List<Post> getUserPosts(Long userId);
 }

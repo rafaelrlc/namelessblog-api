@@ -3,6 +3,7 @@ package com.example.namelessblog.rest.controller;
 
 import com.example.namelessblog.domain.entity.Post;
 import com.example.namelessblog.domain.entity.User;
+import com.example.namelessblog.rest.dto.HomePagePostDTO;
 import com.example.namelessblog.rest.dto.PostDTO;
 import com.example.namelessblog.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class PostController {
     }
 
     @DeleteMapping()
-    public void deletePost(@RequestParam Long id, @RequestParam Long userId) {  //temporarily using request param
+    public void deletePost(@RequestParam Long id, @RequestParam Long userId) {
         postService.deletePost(id, userId);
     }
 
@@ -42,8 +43,8 @@ public class PostController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<Post>> getPosts() {
-        List<Post> posts = postService.getAllPosts();
+    public ResponseEntity<List<HomePagePostDTO>> getAllPosts() {
+        List<HomePagePostDTO> posts = postService.getAllPosts();
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 

@@ -6,6 +6,7 @@ import com.example.namelessblog.domain.entity.User;
 import com.example.namelessblog.repository.BadgeRepository;
 import com.example.namelessblog.repository.PostRepository;
 import com.example.namelessblog.repository.UserRepository;
+import com.example.namelessblog.rest.dto.HomePagePostDTO;
 import com.example.namelessblog.rest.dto.PostDTO;
 import com.example.namelessblog.service.PostService;
 import com.example.namelessblog.service.UserService;
@@ -67,8 +68,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
+    public List<HomePagePostDTO> getAllPosts() {
+        List<Post> posts = postRepository.findAll();
+        List<HomePagePostDTO> homePagePostDTOS = new ArrayList<>();
+        for (Post post : posts) {
+            homePagePostDTOS.add(new HomePagePostDTO(post.getId(), post.getTitle()));
+        }
+        return homePagePostDTOS;
+
     }
 
     @Override
