@@ -8,6 +8,7 @@ import com.example.namelessblog.repository.PostRepository;
 import com.example.namelessblog.repository.UserRepository;
 import com.example.namelessblog.rest.dto.HomePagePostDTO;
 import com.example.namelessblog.rest.dto.PostDTO;
+import com.example.namelessblog.rest.dto.UpdatePostDTO;
 import com.example.namelessblog.service.PostService;
 import com.example.namelessblog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,27 @@ public class PostServiceImpl implements PostService {
         return post;
     }
 
+    @Override
+    public Post updatePost(UpdatePostDTO dto) {
+        Post post = postRepository.findById(dto.postId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+        User user = userService.findUserById(dto.userId());
+
+        // verify if the user is the author of the post
+        if (!Objects.equals(post.getAuthor().getId(), user.getId())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Failed to update post");
+        }
+
+        //Set<Long> badgesId = Optional.ofNullable(dto.badgesId()).orElse(Set.of()); // if badgesId is null, set it to an empty set
+        //List<Badge> badges = badgeRepository.findAllById(badgesId);
+
+        post.setTitle(dto.title());
+        post.setContent(dto.content());
+
+        //xpost.getBadges().addAll(badges);
+
+        postRepository.save(post);
+        return post;
+    }
 
     @Override
     public void deletePost(Long id, Long userId) {

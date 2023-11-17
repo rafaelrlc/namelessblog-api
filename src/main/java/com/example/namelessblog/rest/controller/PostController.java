@@ -5,6 +5,7 @@ import com.example.namelessblog.domain.entity.Post;
 import com.example.namelessblog.domain.entity.User;
 import com.example.namelessblog.rest.dto.HomePagePostDTO;
 import com.example.namelessblog.rest.dto.PostDTO;
+import com.example.namelessblog.rest.dto.UpdatePostDTO;
 import com.example.namelessblog.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,12 @@ public class PostController {
     public ResponseEntity<Post> newPost(@RequestBody PostDTO dto) {
         Post post = postService.savePost(dto);
         return new ResponseEntity<>(post, HttpStatus.CREATED);
+    }
+
+    @PutMapping()
+    public ResponseEntity<Post> updatePost(@RequestBody UpdatePostDTO dto) {
+        Post post = postService.updatePost(dto);
+        return new ResponseEntity<>(post, HttpStatus.OK);
     }
 
     @DeleteMapping()
