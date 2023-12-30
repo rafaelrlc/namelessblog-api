@@ -16,8 +16,8 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "badges")
-public class Badge {
+@Table(name = "tags")
+public class Tags {
 
     @Id
     @GeneratedValue
@@ -30,10 +30,11 @@ public class Badge {
     private String color;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "badges")
-    private Set<Post> postList = new HashSet<>();
+    @ManyToMany(mappedBy = "tags")
+    private List<Post> postList = new ArrayList<>();
 
-    public Badge(String name, String color) {
+
+    public Tags(String name, String color) {
         this.name = name;
         this.color = color;
     }
