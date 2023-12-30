@@ -34,10 +34,11 @@ public class Post {
     private User author;
 
     @ManyToMany
-    @JoinTable(name = "post_badges",
+    @JoinTable(name = "post_tags",
             joinColumns = @JoinColumn(name = "post_id"),
-            inverseJoinColumns = @JoinColumn(name = "badge_id"))
-    private Set<Badge> badges = new HashSet<>();
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private List<Tags> tags = new ArrayList<>();
+
 
     public Post(String title, String content, User author, Date date) {
         this.title = title;
@@ -45,6 +46,5 @@ public class Post {
         this.author = author;
         this.date = date;
     }
-
 
 }
