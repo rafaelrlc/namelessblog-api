@@ -1,10 +1,10 @@
 package com.example.namelessblog.service.impl;
 
-import com.example.namelessblog.domain.entity.Badge;
 import com.example.namelessblog.domain.entity.Post;
+import com.example.namelessblog.domain.entity.Tags;
 import com.example.namelessblog.domain.entity.User;
-import com.example.namelessblog.repository.BadgeRepository;
 import com.example.namelessblog.repository.PostRepository;
+import com.example.namelessblog.repository.TagsRepository;
 import com.example.namelessblog.repository.UserRepository;
 import com.example.namelessblog.rest.dto.HomePagePostDTO;
 import com.example.namelessblog.rest.dto.PostDTO;
@@ -22,23 +22,27 @@ import java.util.*;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final BadgeRepository badgeRepository;
+    private final TagsRepository tagsRepository;
     private final UserService userService;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, UserService userService, BadgeRepository badgeRepository) {
+    public PostServiceImpl(PostRepository postRepository, UserService userService, TagsRepository tagsRepository) {
         this.postRepository = postRepository;
         this.userService = userService;
-        this.badgeRepository = badgeRepository;
+        this.tagsRepository = tagsRepository;
     }
 
     @Override
     public Post savePost(PostDTO dto) {
         User user = userService.findUserById(dto.userId());
 
-        Set<Long> badgesId = Optional.ofNullable(dto.badgesId()).orElse(Set.of()); // if badgesId is null, set it to an empty set
+        Set<Long> badgesId = Optional.ofNullable(dto.tagsId()).orElse(Set.of()); // if badgesId is null, set it to an empty set
 
-        List<Badge> badges = badgeRepository.findAllById(badgesId);
+        List<Tags> tags = new ArrayList<>();
+        for (Long id : badgesId) {
+            Tags tag = tagsRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tag not found"));
+            tags.add(tag);
+        }
 
         Date date = new Date();
         Post post = new Post();
@@ -47,7 +51,7 @@ public class PostServiceImpl implements PostService {
         post.setAuthor(user);
         post.setDate(date);
 
-        post.getBadges().addAll(badges);
+        post.setTags(tags);
 
         postRepository.save(post);
         return post;
@@ -58,24 +62,29 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(dto.postId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
         User user = userService.findUserById(dto.userId());
 
+        Set<Long> tags = Optional.ofNullable(dto.tagsId()).orElse(Set.of());
+
+        // transfer to arraylist
+        List<Tags> tagsList = new ArrayList<>();
+        for (Long id : tags) {
+            Tags tag = tagsRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tag not found"));
+            tagsList.add(tag);
+        }
+
         // verify if the user is the author of the post
         if (!Objects.equals(post.getAuthor().getId(), user.getId())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Failed to update post");
         }
 
-        //Set<Long> badgesId = Optional.ofNullable(dto.badgesId()).orElse(Set.of()); // if badgesId is null, set it to an empty set
-        //List<Badge> badges = badgeRepository.findAllById(badgesId);
-
+        post.setTags(tagsList);
         post.setTitle(dto.title());
         post.setContent(dto.content());
-
-        //xpost.getBadges().addAll(badges);
 
         postRepository.save(post);
         return post;
     }
 
-    @Override
+
     public void deletePost(Long id, Long userId) {
         // futuramente o user vai ser pego pelo token e não pelo id passado na requisição
         Post post = postRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
@@ -94,7 +103,7 @@ public class PostServiceImpl implements PostService {
         List<Post> posts = postRepository.findAll();
         List<HomePagePostDTO> homePagePostDTOS = new ArrayList<>();
         for (Post post : posts) {
-            homePagePostDTOS.add(new HomePagePostDTO(post.getId(), post.getTitle()));
+            homePagePostDTOS.add(new HomePagePostDTO(post.getId(), post.getTitle(), post.getContent()));
         }
         return homePagePostDTOS;
 
@@ -108,7 +117,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post getPost(Long id) {
-        return postRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+        Post post = postRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+        return post;
     }
 
 }
